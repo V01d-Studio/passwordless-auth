@@ -1,3 +1,4 @@
+import { MailerModule } from '@nestjs-modules/mailer';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
@@ -18,6 +19,15 @@ import { User } from './auth/user.entity';
       synchronize: true,
     }),
     AuthModule,
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.sendgrid.net',
+        auth: {
+          user: 'apikey',
+          pass: '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',
+        },
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
