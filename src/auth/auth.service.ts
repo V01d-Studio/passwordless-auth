@@ -6,12 +6,14 @@ import { Cache } from 'cache-manager';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { MailerService } from '@nestjs-modules/mailer/dist';
 
 @Injectable()
 export class AuthService {
   constructor(
     @Inject(CACHE_MANAGER) private cachemanager: Cache,
     @InjectRepository(User) private userRepo: Repository<User>,
+    private mailService: MailerService,
   ) {}
 
   getNumericOtp(length: number): string {
@@ -25,6 +27,17 @@ export class AuthService {
     return OTP;
   }
 
+  async sendEmail(email: string, otp: string) {
+    console.log('email ==', email);
+    const response = await this.mailService.sendMail({
+      to: email,
+      from: 'pkumarsaha21@gmail.com',
+      subject: 'Your Otp is',
+      text: 'Your otp is ' + otp,
+    });
+    return response;
+  }
+
   async generateOtp(email: string): Promise<any> {
     const otp = this.getNumericOtp(6);
     const user = await this.userRepo.findOne({ where: { email: email } });
@@ -34,8 +47,9 @@ export class AuthService {
         HttpStatus.OK,
       );
     }
-
     const key: string = email;
+    const isSuccess = await this.sendEmail(email, otp);
+    console.log(isSuccess);
     await this.cachemanager.set(key, otp, 90);
     return Promise.resolve({ key, otp });
   }

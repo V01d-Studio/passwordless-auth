@@ -19,10 +19,12 @@ const decorators_1 = require("@nestjs/common/decorators");
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("./user.entity");
 const typeorm_2 = require("@nestjs/typeorm");
+const dist_1 = require("@nestjs-modules/mailer/dist");
 let AuthService = class AuthService {
-    constructor(cachemanager, userRepo) {
+    constructor(cachemanager, userRepo, mailService) {
         this.cachemanager = cachemanager;
         this.userRepo = userRepo;
+        this.mailService = mailService;
     }
     getNumericOtp(length) {
         const digits = '0123456789';
@@ -32,6 +34,16 @@ let AuthService = class AuthService {
         }
         return OTP;
     }
+    async sendEmail(email) {
+        console.log('email ==', email);
+        const response = await this.mailService.sendMail({
+            to: email,
+            from: 'pkumarsaha21@gmail.com',
+            subject: 'Your Otp is',
+            text: 'Test email',
+        });
+        return response;
+    }
     async generateOtp(email) {
         const otp = this.getNumericOtp(6);
         const user = await this.userRepo.findOne({ where: { email: email } });
@@ -39,6 +51,8 @@ let AuthService = class AuthService {
             throw new common_1.HttpException(`User with this Email already exists`, common_1.HttpStatus.OK);
         }
         const key = email;
+        const isSuccess = await this.sendEmail(email);
+        console.log(isSuccess);
         await this.cachemanager.set(key, otp, 90);
         return Promise.resolve({ key, otp });
     }
@@ -61,7 +75,8 @@ AuthService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, decorators_1.Inject)(common_2.CACHE_MANAGER)),
     __param(1, (0, typeorm_2.InjectRepository)(user_entity_1.User)),
-    __metadata("design:paramtypes", [Object, typeorm_1.Repository])
+    __metadata("design:paramtypes", [Object, typeorm_1.Repository,
+        dist_1.MailerService])
 ], AuthService);
 exports.AuthService = AuthService;
 //# sourceMappingURL=auth.service.js.map

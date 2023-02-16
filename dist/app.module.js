@@ -7,6 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
+const mailer_1 = require("@nestjs-modules/mailer");
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const app_controller_1 = require("./app.controller");
@@ -29,6 +30,15 @@ AppModule = __decorate([
                 synchronize: true,
             }),
             auth_module_1.AuthModule,
+            mailer_1.MailerModule.forRoot({
+                transport: {
+                    host: 'smtp.sendgrid.net',
+                    auth: {
+                        user: 'apikey',
+                        pass: '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',
+                    },
+                },
+            }),
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
