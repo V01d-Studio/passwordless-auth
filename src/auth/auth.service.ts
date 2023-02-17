@@ -31,7 +31,7 @@ export class AuthService {
     console.log('email ==', email);
     const response = await this.mailService.sendMail({
       to: email,
-      from: 'pkumarsaha21@gmail.com',
+      from: 'noreply@cloudbunker.net',
       subject: 'Your Otp is',
       text: 'Your otp is ' + otp,
     });

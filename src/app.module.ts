@@ -24,7 +24,7 @@ import { User } from './auth/user.entity';
         host: 'smtp.sendgrid.net',
         auth: {
           user: 'apikey',
-          pass: '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',
+          pass: 'KRttd7LIMrmHCCj5RCJv',
         },
       },
     }),
